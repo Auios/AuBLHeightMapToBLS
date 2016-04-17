@@ -7,9 +7,6 @@ printf(!"Blockland Heightmap to .BLS converter\nBy: Auios\n")
 
 file.getData("map.bmp")
 
-file.display()
-
-
+'file.display()
 file.exportToText()
 file.cleanUp()
-sleep()
