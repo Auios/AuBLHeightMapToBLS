@@ -3,6 +3,7 @@
 #include "fbgfx.bi"
 #include "crt.bi"
 #include "file.bi"
+#include "string.bi"
 
 type bmpFile
     private:
@@ -11,13 +12,17 @@ type bmpFile
     bmpHeight as ulong
     image as fb.image ptr
     
+    size as uinteger
+    
     public:
     declare sub getData(fileName as string)
     declare function exists() as boolean
     declare function getFileName() as string
     declare function getWidth() as ulong
     declare function getHeight() as ulong
+    declare function getSize() as uinteger
     declare sub exportToText()
+    declare sub exportToBLS()
     declare sub cleanUp()
     declare sub display()
 end type
@@ -37,6 +42,10 @@ end function
 sub bmpFile.cleanUp()
     imageDestroy(this.image)
 end sub
+
+function bmpFile.getSize() as uinteger
+    return this.getWidth() * this.getHeight()
+end function
 
 function bmpFile.exists() as boolean
     if(len(this.fileName)) then
@@ -80,13 +89,14 @@ sub bmpFile.exportToText()
 end sub
 
 sub bmpFile.exportToBLS()
-    dim as uinteger pixel
-    dim as string lineStr
+        dim as single highestBrick, lowestBrick, brickHeight
+    dim as integer pixel, clr
     dim as integer ff = freefile
+    
     open "map.bls" for output as #ff
     
     print #ff, "This is a Blockland save file.  You probably shouldn't modify it cause you'll screw it up."
-    print #ff, "1"
+    print #ff, !"1\n"
     print #ff, "0.486275 0.066667 0.039216 1.000000"
     print #ff, "0.768627 0.066667 0.054902 1.000000"
     print #ff, "0.909804 0.529412 0.501961 1.000000"
@@ -151,12 +161,28 @@ sub bmpFile.exportToBLS()
     print #ff, "0.341176 0.313726 0.274510 1.000000"
     print #ff, "0.286275 0.286275 0.258824 1.000000"
     print #ff, "1.000000 0.000000 1.000000 0.000000"
-    
+    print #ff, "Linecount " & this.getSize()
     
     for yy as integer = 0 to this.getHeight()-1
         for xx as integer = 0 to this.getWidth()-1
-            'pixel = point(xx,yy,image)
-            'lineStr += chr(pixel)
+            pixel = point(xx,yy,image)
+            brickHeight = (1.5+(pixel * 0.25) * -1)*0.000005
+            if(brickHeight > highestBrick) then
+                highestBrick = brickHeight
+            else
+                if(brickHeight < lowestBrick) then
+                    lowestBrick = highestBrick
+                end if
+            end if
+        next xx
+    next yy
+    
+    for yy as integer = 0 to this.getHeight()-1
+        for xx as integer = 0 to this.getWidth()-1
+            pixel = point(xx,yy,image)
+            brickHeight = (1.5+(pixel * 0.25) * -1)*0.000005
+            clr = ((brickHeight/highestBrick)*(44-36))+36
+            print #ff, !"2x2x5\" " & xx & " " & yy & " " & format(brickHeight, ".00") & " 0 1 " & clr & "  0 0 1 1 1"
         next xx
     next yy
     close #ff
