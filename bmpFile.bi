@@ -180,9 +180,11 @@ sub bmpFile.exportToBLS()
     for yy as integer = 0 to this.getHeight()-1
         for xx as integer = 0 to this.getWidth()-1
             pixel = point(xx,yy,image)
-            brickHeight = (1.5+(pixel * 0.25) * -1)*0.000005
-            clr = ((brickHeight/highestBrick)*(44-36))+36
-            print #ff, !"2x2x5\" " & xx & " " & yy & " " & format(brickHeight, ".00") & " 0 1 " & clr & "  0 0 1 1 1"
+            brickHeight = abs(1.5+(pixel * 0.3)*0.000005)
+            'clr = brickHeight/highestBrick
+            'print #ff, !"2x6x3\" " & xx & " " & yy & " " & format(brickHeight, ".#") & " 3 1 29  0 0 1 1 1"
+            'print #ff, !"2x2x5\" " & xx & " " & yy & " " & format(brickHeight, ".#") & " 3 1 29  0 0 1 1 1"
+            print #ff, !"4x Cube\" " & xx*2 & " " & yy*2 & " " & format(brickHeight, ".00") & " 0 1 29  0 0 1 1 1"
         next xx
     next yy
     close #ff
