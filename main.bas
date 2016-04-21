@@ -9,5 +9,5 @@ file.getData("2.bmp")
 
 'file.display()
 'file.exportToText()
-file.exportToBLS()
+file.exportToBLS(0.5)
 file.cleanUp()

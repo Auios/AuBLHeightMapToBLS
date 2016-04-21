@@ -22,7 +22,7 @@ type bmpFile
     declare function getHeight() as ulong
     declare function getSize() as uinteger
     declare sub exportToText()
-    declare sub exportToBLS()
+    declare sub exportToBLS(modify as single)
     declare sub cleanUp()
     declare sub display()
 end type
@@ -77,7 +77,7 @@ sub bmpFile.exportToText()
     dim as uinteger pixel
     dim as string lineStr
     dim as integer ff = freefile
-    open "text.txt" for output as #ff
+    open "C:\Users\LoneA\Documents\Blockland\saves\SaveTest.bls" for output as #ff
     for yy as integer = 0 to this.getHeight()-1
         for xx as integer = 0 to this.getWidth()-1
             pixel = point(xx,yy,image)
@@ -88,7 +88,7 @@ sub bmpFile.exportToText()
     close #ff
 end sub
 
-sub bmpFile.exportToBLS()
+sub bmpFile.exportToBLS(modify as single)
         dim as single highestBrick, lowestBrick, brickHeight
     dim as integer pixel, clr
     dim as integer ff = freefile
@@ -180,11 +180,11 @@ sub bmpFile.exportToBLS()
     for yy as integer = 0 to this.getHeight()-1
         for xx as integer = 0 to this.getWidth()-1
             pixel = point(xx,yy,image)
-            brickHeight = abs(1.5+(pixel * 0.3)*0.000005)
+            brickHeight = abs(1.5+(pixel * modify)*0.000005)
             'clr = brickHeight/highestBrick
             'print #ff, !"2x6x3\" " & xx & " " & yy & " " & format(brickHeight, ".#") & " 3 1 29  0 0 1 1 1"
             'print #ff, !"2x2x5\" " & xx & " " & yy & " " & format(brickHeight, ".#") & " 3 1 29  0 0 1 1 1"
-            print #ff, !"4x Cube\" " & xx*2 & " " & yy*2 & " " & format(brickHeight, ".00") & " 0 1 29  0 0 1 1 1"
+            print #ff, !"8x Cube\" " & xx*4 & " " & yy*4 & " " & format(brickHeight, ".00") & " 0 1 29  0 0 1 1 1"
         next xx
     next yy
     close #ff
