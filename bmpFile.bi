@@ -89,11 +89,11 @@ sub bmpFile.exportToText()
 end sub
 
 sub bmpFile.exportToBLS(modify as single)
-        dim as single highestBrick, lowestBrick, brickHeight
+    dim as single highestBrick, lowestBrick, brickHeight, turfHeight, brickHeightPercent, heightSz
     dim as integer pixel, clr
     dim as integer ff = freefile
     
-    open "map.bls" for output as #ff
+    open "C:\Users\LoneA\Documents\Blockland\saves\SaveTest.bls" for output as #ff
     
     print #ff, "This is a Blockland save file.  You probably shouldn't modify it cause you'll screw it up."
     print #ff, !"1\n"
@@ -161,7 +161,7 @@ sub bmpFile.exportToBLS(modify as single)
     print #ff, "0.341176 0.313726 0.274510 1.000000"
     print #ff, "0.286275 0.286275 0.258824 1.000000"
     print #ff, "1.000000 0.000000 1.000000 0.000000"
-    print #ff, "Linecount " & this.getSize()
+    print #ff, "Linecount " & this.getSize()*2
     
     for yy as integer = 0 to this.getHeight()-1
         for xx as integer = 0 to this.getWidth()-1
@@ -177,14 +177,32 @@ sub bmpFile.exportToBLS(modify as single)
         next xx
     next yy
     
+    heightSz = highestBrick - lowestBrick
+    
     for yy as integer = 0 to this.getHeight()-1
         for xx as integer = 0 to this.getWidth()-1
             pixel = point(xx,yy,image)
-            brickHeight = abs(1.5+(pixel * modify)*0.000005)
+            brickHeight = val(format(abs(1.5+(pixel * modify)*0.000005), ".0"))
+            turfHeight = val(format(brickHeight + 2, ".0"))
             'clr = brickHeight/highestBrick
-            'print #ff, !"2x6x3\" " & xx & " " & yy & " " & format(brickHeight, ".#") & " 3 1 29  0 0 1 1 1"
-            'print #ff, !"2x2x5\" " & xx & " " & yy & " " & format(brickHeight, ".#") & " 3 1 29  0 0 1 1 1"
-            print #ff, !"8x Cube\" " & xx*4 & " " & yy*4 & " " & format(brickHeight, ".00") & " 0 1 29  0 0 1 1 1"
+            '37 Sand
+            '28 Grass
+            '58 Stone
+            '48 Tundra
+            brickHeightPercent = (brickheight - lowestBrick)/heightSz
+            'print brickHeightPercent
+            if(brickHeightPercent < 0.71) then
+                clr = 37
+            else
+                if(brickHeightPercent > 0.99) then
+                    clr = 48
+                else
+                    clr = 28
+                end if
+            end if
+            
+            print #ff, !"8x Cube\" " & xx*4 & " " & yy*4 & " " & brickHeight & " 0 1 58  0 0 1 1 1"
+            print #ff, !"8x8F\" " & xx*4 & " " & yy*4 & " " & turfHeight & " 0 1 " & clr & "  0 0 1 1 1"
         next xx
     next yy
     close #ff
