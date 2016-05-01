@@ -185,24 +185,30 @@ sub bmpFile.exportToBLS(modify as single)
             brickHeight = val(format(abs(1.5+(pixel * modify)*0.000005), ".0"))
             turfHeight = val(format(brickHeight + 2, ".0"))
             'clr = brickHeight/highestBrick
+            '14 Water
             '37 Sand
             '28 Grass
             '58 Stone
             '48 Tundra
             brickHeightPercent = (brickheight - lowestBrick)/heightSz
             'print brickHeightPercent
-            if(brickHeightPercent < 0.71) then
-                clr = 37
+            if(brickHeightPercent < 0.7) then
+                'print #ff, !"8x Cube\" " & xx*4 & " " & yy*4 & " 10.8 0 1 13  0 0 1 1 1"
+                print #ff, !"8x Cube\" " & xx*4 & " " & yy*4 & " 2 0 1 13  0 0 1 1 1"
             else
-                if(brickHeightPercent > 0.99) then
-                    clr = 48
+                if(brickHeightPercent < 0.71) then
+                    clr = 37
                 else
-                    clr = 28
+                    if(brickHeightPercent > 0.99) then
+                        clr = 48
+                    else
+                        clr = 28
+                    end if
                 end if
+                
+                print #ff, !"8x Cube\" " & xx*4 & " " & yy*4 & " " & brickHeight-8.8 & " 0 1 58  0 0 1 1 1"
+                print #ff, !"8x8F\" " & xx*4 & " " & yy*4 & " " & turfHeight-8.8 & " 0 1 " & clr & "  0 0 1 1 1"
             end if
-            
-            print #ff, !"8x Cube\" " & xx*4 & " " & yy*4 & " " & brickHeight & " 0 1 58  0 0 1 1 1"
-            print #ff, !"8x8F\" " & xx*4 & " " & yy*4 & " " & turfHeight & " 0 1 " & clr & "  0 0 1 1 1"
         next xx
     next yy
     close #ff
